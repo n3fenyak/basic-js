@@ -11,33 +11,52 @@ function transform(arr) {
   }
 
   const result = [];
+  const discarded = new Set();
 
   for (let i = 0; i < arr.length; i++) {
-    const element = arr[i];
+    const item = arr[i];
 
-    switch (element) {
-      case '--discard-next':
-        i++;
-        break;
+    if (item === '--discard-next') {
+      discarded.add(i + 1);
+      continue;
+    }
 
-      case '--discard-prev':
-        result.pop();
-        break;
+    if (item === '--double-next') {
+      if (i + 1 < arr.length && !discarded.has(i + 1)) {
+        const next = arr[i + 1];
 
-      case '--double-next':
-        if (i + 1 < arr.length) {
-          result.push(arr[i + 1]);
+        if (typeof next !== 'string' || !next.startsWith('--')) {
+          result.push(next);
         }
-        break;
+      }
+      continue;
+    }
 
-      case '--double-prev':
-        if (result.length > 0) {
-          result.push(result[result.length - 1]);
+    if (item === '--discard-prev') {
+      if (i > 0 && !discarded.has(i - 1)) {
+        const prev = arr[i - 1];
+
+        if (typeof prev !== 'string' || !prev.startsWith('--')) {
+          result.pop();
+          discarded.add(i - 1);
         }
-        break;
+      }
+      continue;
+    }
 
-      default:
-        result.push(element);
+    if (item === '--double-prev') {
+      if (i > 0 && !discarded.has(i - 1)) {
+        const prev = arr[i - 1];
+
+        if (typeof prev !== 'string' || !prev.startsWith('--')) {
+          result.push(prev);
+        }
+      }
+      continue;
+    }
+
+    if (!discarded.has(i)) {
+      result.push(item);
     }
   }
 
@@ -45,5 +64,5 @@ function transform(arr) {
 }
 
 module.exports = {
-  transform
+  transform,
 };

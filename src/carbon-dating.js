@@ -1,4 +1,3 @@
-const { NotImplementedError } = require('../lib');
 
 const MODERN_ACTIVITY = 15;
 const HALF_LIFE_PERIOD = 5730;
@@ -38,3 +37,7 @@ function dateSample(sampleActivity) {
 
   return Math.ceil(age);
 }
+
+module.exports = {
+  dateSample,
+};
