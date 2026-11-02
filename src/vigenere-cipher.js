@@ -1,33 +1,56 @@
-const { NotImplementedError } = require('../lib');
-
-/**
- * Implement class VigenereCipheringMachine that allows us to create
- * direct and reverse ciphering machines according to task description
- *
- * @example
- *
- * const directMachine = new VigenereCipheringMachine();
- *
- * const reverseMachine = new VigenereCipheringMachine(false);
- *
- * directMachine.encrypt('attack at dawn!', 'alphonse') => 'AEIHQX SX DLLU!'
- *
- * directMachine.decrypt('AEIHQX SX DLLU!', 'alphonse') => 'ATTACK AT DAWN!'
- *
- * reverseMachine.encrypt('attack at dawn!', 'alphonse') => '!ULLD XS XQHIEA'
- *
- * reverseMachine.decrypt('AEIHQX SX DLLU!', 'alphonse') => '!NWAD TA KCATTA'
- *
- */
 class VigenereCipheringMachine {
-  encrypt() {
-    // Remove line below and write your code here
-    throw new NotImplementedError('Not implemented');
+  constructor(isDirect = true) {
+    this.isDirect = isDirect;
   }
 
-  decrypt() {
-    // Remove line below and write your code here
-    throw new NotImplementedError('Not implemented');
+  encrypt(message, key) {
+    return this.process(message, key, true);
+  }
+
+  decrypt(message, key) {
+    return this.process(message, key, false);
+  }
+
+  process(message, key, isEncrypt) {
+    if (
+      typeof message !== 'string' ||
+      typeof key !== 'string' ||
+      !message ||
+      !key
+    ) {
+      throw new Error('Incorrect arguments!');
+    }
+
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const text = message.toUpperCase();
+    const cipherKey = key.toUpperCase();
+
+    let result = '';
+    let keyIndex = 0;
+
+    for (const char of text) {
+      const charIndex = alphabet.indexOf(char);
+
+      if (charIndex === -1) {
+        result += char;
+        continue;
+      }
+
+      const shift = alphabet.indexOf(
+        cipherKey[keyIndex % cipherKey.length]
+      );
+
+      const newIndex = isEncrypt
+        ? (charIndex + shift) % 26
+        : (charIndex - shift + 26) % 26;
+
+      result += alphabet[newIndex];
+      keyIndex++;
+    }
+
+    return this.isDirect
+      ? result
+      : result.split('').reverse().join('');
   }
 }
 
